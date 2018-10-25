@@ -1,19 +1,18 @@
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Activation
 from keras.models import model_from_yaml
+from keras.utils import np_utils
 from keras.datasets import mnist
 import numpy as np
 import random
 
-def dataSet(x_train, labels):
+def dataSet(x_train, y_train):
     x_train = x_train.reshape(len(x_train), -1)
     x_train = x_train / 256
-    y_train = []
-    for y in labels:
-        y_label = np.zeros([10])
-        y_label[y] = 1
-        y_train.append(y_label)
-    y_train = np.array(y_train)
+    y_train = np_utils.to_categorical(y_train, 10)
+    '''转换为one_hot类型
+        多分类cnn网络的输出通常是softmax层，为一个概率分布，
+        要求输入的标签也以概率分布的形式出现，进而计算交叉熵'''
     return x_train, y_train
 
 def dataLoad():
@@ -29,10 +28,10 @@ if __name__ == '__main__':
     model.add(Dense(input_dim=28 * 28,
                     units=500))
     model.add(Activation('relu'))
-    model.add(Dropout(0.5))
+    model.add(Dropout(0.7))
     model.add(Dense(units=500))
     model.add(Activation('relu'))
-    model.add(Dropout(0.5))
+    model.add(Dropout(0.6))
     model.add(Dense(units=10))
     model.add(Activation('softmax'))
     model.compile(loss='categorical_crossentropy',
